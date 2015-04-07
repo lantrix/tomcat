@@ -19,14 +19,19 @@
 # limitations under the License.
 #
 
+execute 'tomcat7-restart' do
+  command 'service tomcat7 restart'
+  action :nothing
+end
+
 template "#{node["tomcat"]["config_dir"]}/tomcat-users.xml" do
   source 'tomcat-users.xml.erb'
   owner 'root'
   group 'root'
-  mode '0644'
+  mode '0640'
   variables(
     :users => TomcatCookbook.users,
     :roles => TomcatCookbook.roles,
   )
-  notifies :restart, 'service[tomcat]'
+  notifies :run, 'execute[tomcat7-restart]', :immediately
 end
